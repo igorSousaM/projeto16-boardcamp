@@ -3,7 +3,7 @@ import express  from "express";
 
 const categoriesRoute = express.Router()
 
-categoriesRoute.get("/", async (req, res) => {
+categoriesRoute.get("/categories", async (req, res) => {
     const resposta = await connection.query("SELECT * FROM categories;");
     res.send(resposta.rows);
   });
