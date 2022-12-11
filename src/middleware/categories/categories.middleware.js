@@ -8,6 +8,7 @@ export async function validatePostCategories(req, res, next) {
   if (error) {
     return res.status(400).send(error.message);
   }
+
   try {
     const nameExist = await connection.query(
       "SELECT * FROM categories WHERE name=$1;",
@@ -17,8 +18,6 @@ export async function validatePostCategories(req, res, next) {
     if (nameExist.rows[0] && nameExist.rows[0].name === name) {
       return res.status(400).send("já tem esse cadastrado!");
     }
-
-
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
