@@ -8,8 +8,28 @@ export async function postCustomers(req, res) {
       "INSERT INTO customers (name,phone,cpf,birthday) VALUES ($1,$2,$3,$4)",
       [name, phone, cpf, birthday]
     );
-    res.status(201).send("foi")
+    res.sendStatus(201);
   } catch (err) {
     console.log(err);
+  }
+}
+
+export async function getCustomers(req, res) {
+  const { cpf } = req.query;
+
+  try {
+    if (!cpf) {
+      const customersList = await connection.query("SELECT * FROM customers");
+      return res.status(200).send(customersList.rows);
+    } else {
+      const customersList = await connection.query(
+        "SELECT * FROM customers WHERE cpf LIKE $1",
+        [cpf + "%"]
+      );
+      return res.status(200).send(customersList.rows);
+    }
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
   }
 }
