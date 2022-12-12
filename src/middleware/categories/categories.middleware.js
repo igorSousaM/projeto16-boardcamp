@@ -6,7 +6,7 @@ export async function validatePostCategories(req, res, next) {
 
   const { error } = nameSchema.validate(name);
   if (error) {
-    return res.status(400).send(error.message);
+    return res.sendStatus(400);
   }
 
   try {
@@ -16,7 +16,7 @@ export async function validatePostCategories(req, res, next) {
     );
 
     if (nameExist.rows[0] && nameExist.rows[0].name === name) {
-      return res.status(400).send("já tem esse cadastrado!");
+      return res.sendStatus(409);
     }
   } catch (err) {
     console.log(err);
