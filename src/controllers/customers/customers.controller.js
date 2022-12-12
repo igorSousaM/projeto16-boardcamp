@@ -33,3 +33,23 @@ export async function getCustomers(req, res) {
     res.sendStatus(500);
   }
 }
+
+export async function getSpecificCustomer(req, res) {
+  const { id } = req.params;
+
+  try {
+    const customerFound = await connection.query(
+      "SELECT * FROM customers WHERE id=$1",
+      [id]
+    );
+    
+    if (!customerFound.rows[0]) {
+      return res.status(400).send("nao existe esse id");
+    }
+
+    res.status(200).send(customerFound.rows);
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
+}
