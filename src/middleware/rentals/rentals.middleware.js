@@ -46,22 +46,47 @@ export async function validatePostRentals(req, res, next) {
   next();
 }
 
-export async function validateDeleteRentals(req, res, next){
-  const {id} = req.params;
+export async function validateDeleteRentals(req, res, next) {
+  const { id } = req.params;
 
-  try{
-    const foundId = await connection.query('SELECT * FROM rentals WHERE id=$1',[id])
-    if(foundId.rows.length === 0){
-      return res.sendStatus(404)
+  try {
+    const foundId = await connection.query(
+      "SELECT * FROM rentals WHERE id=$1",
+      [id]
+    );
+    if (foundId.rows.length === 0) {
+      return res.sendStatus(404);
     }
 
     //verificar se o aluguel foi finalizado?
-  
-  }catch(err){
-    console.log(err)
-    res.sendStatus(500)
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
   }
 
-  res.locals.id = id
+  res.locals.id = id;
+  next();
+}
+
+export async function validateReturnRentals(req, res, next) {
+  const { id } = req.params;
+
+  try {
+    const rental = await connection.query(
+      "SELECT * FROM rentals WHERE id=$1",
+      [id]
+    );
+    if (rental.rows.length === 0) {
+      return res.sendStatus(404);
+    }
+
+    //verificar se o aluguel foi finalizado - 400
+
+    res.locals.data = rental;
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
+
   next();
 }
