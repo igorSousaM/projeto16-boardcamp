@@ -1,6 +1,7 @@
-import dayjs from "dayjs";
 import connection from "../../database/index.js";
 import rentalsBodySchema from "../../models/rentals/rentals.model.js";
+import dayjs from "dayjs";
+
 
 export async function validatePostRentals(req, res, next) {
   const body = req.body;
@@ -31,7 +32,7 @@ export async function validatePostRentals(req, res, next) {
 
     const rentalsData = {
       ...body,
-      rentDate: dayjs().format("YYYY-MM-DD"),
+      rentDate: dayjs().format('YYYY-MM-DD'),
       originalPrice: body.daysRented * game.rows[0].pricePerDay,
       returnDate: null,
       delayFee: null,
@@ -72,17 +73,19 @@ export async function validateReturnRentals(req, res, next) {
   const { id } = req.params;
 
   try {
+
     const rental = await connection.query(
       "SELECT * FROM rentals WHERE id=$1",
       [id]
     );
+
     if (rental.rows.length === 0) {
       return res.sendStatus(404);
     }
 
     //verificar se o aluguel foi finalizado - 400
 
-    res.locals.data = rental;
+    res.locals.data = rental.rows;
   } catch (err) {
     console.log(err);
     res.sendStatus(500);

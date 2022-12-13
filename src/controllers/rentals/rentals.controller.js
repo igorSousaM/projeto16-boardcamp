@@ -186,22 +186,32 @@ export async function deleteRentals(req, res) {
 }
 
 export async function returnRentals(req, res) {
-  const rental = res.locals.data;
-
-  const newReturnDate = dayjs().format("YYYY-MM-DD");
-  //calcular dleayFee
-  const newDelayFee = dayjs();
-  //console.log(dayjs().subtract(10,'day').format("YYYY-MM-DD"))
-
+  const rental = res.locals.data[0];
   try {
+    const gameList = await connection.query("SELECT * FROM games WHERE id=$1", [
+      rental.gameId,
+    ]);
+
+    const date = new Date(Date.now());
+
+    const newReturnDate = dayjs().format("YYYY-MM-DD");
+    const rentDate = rental.rentDate;
+    let delayFee =
+      Math.floor(
+        ((date - rentDate) / (1000 * 60 * 60 * 24)) - rental.daysRented
+      ) * gameList.rows[0].pricePerDay;
+
+    if (delayFee < 0) {
+      delayFee = 0
+    }
+
     await connection.query(
-      'UPDATE rentals SET "returnDate"=$1, "delayFee"=$2 ',
-      [newReturnDate, newDelayFee]
+      'UPDATE rentals SET "returnDate"=$1, "delayFee"=$2 WHERE id=$3',
+      [newReturnDate, delayFee, rental.id]
     );
+    res.send(rental.rows);
   } catch (err) {
-    console.log(err);
+    console.log(err)
     res.sendStatus(500);
   }
-
-  res.send(rental.rows);
 }
