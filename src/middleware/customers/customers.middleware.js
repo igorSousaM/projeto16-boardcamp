@@ -1,7 +1,7 @@
 import connection from "../../database/index.js"
 import customersSchema from "../../models/customers/customers.model.js"
 
-export async function validadePostCustomers(req,res,next){
+export async function validatePostCustomers(req,res,next){
     
     const customersData = req.body
 
